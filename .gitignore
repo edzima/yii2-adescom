@@ -1,0 +1,6 @@
+.idea
+composer.lock
+src/config/params-local.php
+
+tests/_output/
+tests/_support/_generated
