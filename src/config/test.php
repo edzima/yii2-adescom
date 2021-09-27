@@ -1,5 +1,6 @@
 <?php
 
+use Edzima\Yii2Adescom\AdescomSoap;
 use yii\caching\ArrayCache;
 
 $params = array_merge(
@@ -19,6 +20,11 @@ return [
 	],
 	'language' => 'en-US',
 	'components' => [
+		'smsAdescom' => [
+			'class' => AdescomSoap::class,
+			'login' => $params['adescom.login'],
+			'password' => $params['adescom.password'],
+		],
 		'mailer' => [
 			'useFileTransport' => true,
 		],

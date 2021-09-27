@@ -1,5 +1,6 @@
 <?php
 
+use yii\base\Model;
 
 /**
  * Inherited Methods
@@ -15,12 +16,15 @@
  * @method void pause()
  *
  * @SuppressWarnings(PHPMD)
-*/
-class UnitTester extends \Codeception\Actor
-{
-    use _generated\UnitTesterActions;
+ */
+class UnitTester extends \Codeception\Actor {
 
-    /**
-     * Define custom actions here
-     */
+	use _generated\UnitTesterActions;
+
+	/**
+	 * Define custom actions here
+	 */
+	public function seeModelError(Model $model, string $attribute, string $message): void {
+		$this->assertSame($message, $model->getFirstError($attribute));
+	}
 }

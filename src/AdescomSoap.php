@@ -13,6 +13,7 @@ use Yii;
 use yii\base\Application;
 use yii\base\Component;
 use yii\base\Event;
+use yii\helpers\VarDumper;
 
 class AdescomSoap extends Component implements SenderInterface {
 
@@ -52,7 +53,9 @@ class AdescomSoap extends Component implements SenderInterface {
 			ini_set("soap.wsdl_cache_enabled", "0");
 		}
 		$this->options['location'] = $this->getLocation();
-		Event::on(Application::class, Application::EVENT_AFTER_REQUEST, 'logout');
+		Event::on(Application::class, Application::EVENT_AFTER_REQUEST, function () {
+			$this->logout();
+		});
 	}
 
 	/**
@@ -101,10 +104,10 @@ class AdescomSoap extends Component implements SenderInterface {
 				$options->max_retry_count = $message->getMaxRetryCount();
 				$options->retry_interval = $message->getRetryInterval();
 				$options->message = $message->getMessage();
-				Yii::debug("Try send SMS for Message: " . print_r($message), 'adescomSoap.send');
+				Yii::debug("Try send SMS for Message: " . VarDumper::export($message), 'adescomSoap.send');
 
 				$response = $this->getClient()->smsSend($options);
-				Yii::debug("Succes Send SMS with response: " . print_r($response), 'adescomSoap.send');
+				Yii::debug("Success Send SMS. Response: " . VarDumper::export($response), 'adescomSoap.send');
 
 				return $response->sms_id;
 			} catch (SoapFault $e) {
