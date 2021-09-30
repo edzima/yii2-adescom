@@ -1,5 +1,6 @@
 <?php
 
+use _generated\FunctionalTesterActions;
 
 /**
  * Inherited Methods
@@ -15,8 +16,8 @@
  * @method void pause()
  *
  * @SuppressWarnings(PHPMD)
-*/
-class FunctionalTester extends \Codeception\Actor
-{
-    use _generated\FunctionalTesterActions;
+ */
+class FunctionalTester extends \Codeception\Actor {
+
+	use FunctionalTesterActions;
 }

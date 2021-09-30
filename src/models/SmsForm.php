@@ -14,7 +14,7 @@ class SmsForm extends Model {
 	/**
 	 * @var string|array|SenderInterface
 	 */
-	public $sender = 'smsAdescom';
+	public $sender = 'sms';
 
 	public function init() {
 		parent::init();

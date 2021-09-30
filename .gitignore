@@ -1,6 +1,8 @@
 .idea
 composer.lock
+
 src/config/params-local.php
+src/runtime
 
 tests/_output/
 tests/_support/_generated

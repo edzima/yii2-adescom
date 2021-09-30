@@ -1,42 +1,43 @@
 {
-    "name": "edzima/yii2-adescom",
-    "description": "Yii2 Module for send SMS from ADESCOM",
-    "type": "library",
-    "require": {
-        "php": "^7.4",
-        "ext-soap": "*",
-        "yiisoft/yii2": "^2.0"
-    },
-    "require-dev": {
-        "codeception/codeception": "^4.1",
-        "squizlabs/php_codesniffer": "^3.6",
-        "codeception/module-yii2": "^1.0",
-        "codeception/module-asserts": "^1.0.0"
-    },
-    "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Edzima\\Yii2Adescom\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "edzima",
-            "email": "fachowosc@gmail.com"
-        }
-    ],
-    "minimum-stability": "stable",
-    "config": {
-        "process-timeout": 1800,
-        "discard-changes": true,
-        "fxp-asset": {
-            "enabled": false
-        }
-    },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://asset-packagist.org"
-        }
-    ]
+	"name": "edzima/yii2-adescom",
+	"description": "Yii2 Module for send SMS from ADESCOM",
+	"type": "library",
+	"require": {
+		"php": "^7.4",
+		"ext-soap": "*",
+		"yiisoft/yii2": "^2.0"
+	},
+	"require-dev": {
+		"codeception/codeception": "^4.1",
+		"squizlabs/php_codesniffer": "^3.6",
+		"codeception/module-yii2": "^1.0",
+		"codeception/module-asserts": "^1.0.0"
+	},
+	"license": "MIT",
+	"autoload": {
+		"psr-4": {
+			"Edzima\\Yii2Adescom\\": "src/",
+			"Edzima\\Yii2Adescom\\tests": "tests/"
+		}
+	},
+	"authors": [
+		{
+			"name": "edzima",
+			"email": "fachowosc@gmail.com"
+		}
+	],
+	"minimum-stability": "stable",
+	"config": {
+		"process-timeout": 1800,
+		"discard-changes": true,
+		"fxp-asset": {
+			"enabled": false
+		}
+	},
+	"repositories": [
+		{
+			"type": "composer",
+			"url": "https://asset-packagist.org"
+		}
+	]
 }

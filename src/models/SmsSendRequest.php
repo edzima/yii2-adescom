@@ -2,9 +2,7 @@
 
 namespace Edzima\Yii2Adescom\models;
 
-use yii\base\BaseObject;
-
-class SmsSendRequest extends BaseObject implements MessageInterface {
+class SmsSendRequest extends BaseMessage {
 
 	private string $message;
 	private string $src;
@@ -12,7 +10,7 @@ class SmsSendRequest extends BaseObject implements MessageInterface {
 	private int $max_retry_count;
 	private int $retry_interval;
 	private ?string $overwrite_src = null;
-	private string $external_id;
+	private ?string $external_id = null;
 
 	public function setMessage(string $message): MessageInterface {
 		$this->message = $message;
@@ -66,5 +64,19 @@ class SmsSendRequest extends BaseObject implements MessageInterface {
 
 	public function getRetryInterval(): int {
 		return $this->retry_interval;
+	}
+
+	public function setExternalId(?string $id): void {
+		$this->external_id = $id;
+	}
+
+	public function getExternalId(): ?string {
+		return $this->external_id;
+	}
+
+	public function toArray(): array {
+		$array = parent::toArray();
+		$array['external_id'] = $this->getExternalId();
+		return $array;
 	}
 }

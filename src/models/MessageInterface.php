@@ -27,4 +27,8 @@ interface MessageInterface {
 	public function setRetryInterval(int $value): self;
 
 	public function getRetryInterval(): int;
+
+	public function toArray(): array;
+
+	public function send(SenderInterface $sender = null): ?string;
 }

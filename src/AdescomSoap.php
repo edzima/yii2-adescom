@@ -4,8 +4,6 @@ namespace Edzima\Yii2Adescom;
 
 use Edzima\Yii2Adescom\exceptions\Exception;
 use Edzima\Yii2Adescom\models\MessageInterface;
-use Edzima\Yii2Adescom\models\SenderInterface;
-use Edzima\Yii2Adescom\models\SmsSendRequest;
 use SoapClient;
 use SoapFault;
 use stdClass;
@@ -15,7 +13,7 @@ use yii\base\Component;
 use yii\base\Event;
 use yii\helpers\VarDumper;
 
-class AdescomSoap extends Component implements SenderInterface {
+class AdescomSoap extends Component {
 
 	public string $wsdlProto = 'https';
 	public string $wsdlHost = 'platformy2.3s.pl';
@@ -31,10 +29,6 @@ class AdescomSoap extends Component implements SenderInterface {
 		'soap_version' => SOAP_1_2,
 		'trace' => 1,
 		'features' => SOAP_SINGLE_ELEMENT_ARRAYS,
-	];
-
-	public array $composeConfig = [
-		'class' => SmsSendRequest::class,
 	];
 
 	public ?string $keySessionIdCache = 'adescom.sessionId';
@@ -56,15 +50,6 @@ class AdescomSoap extends Component implements SenderInterface {
 		Event::on(Application::class, Application::EVENT_AFTER_REQUEST, function () {
 			$this->logout();
 		});
-	}
-
-	/**
-	 * @noinspection PhpIncompatibleReturnTypeInspection
-	 */
-	public function compose(array $config = []): MessageInterface {
-		$default = $this->composeConfig;
-		$config = array_merge($default, $config);
-		return Yii::createObject($config);
 	}
 
 	protected function setLogin(string $login): void {

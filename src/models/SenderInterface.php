@@ -4,7 +4,7 @@ namespace Edzima\Yii2Adescom\models;
 
 interface SenderInterface {
 
-	public function compose(array $config = []): MessageInterface;
+	public function compose(array $params = []): MessageInterface;
 
 	/**
 	 * @param MessageInterface $message

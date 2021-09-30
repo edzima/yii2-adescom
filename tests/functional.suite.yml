@@ -7,4 +7,6 @@
 
 actor: FunctionalTester
 modules:
-    step_decorators: ~        
+  enabled:
+    - Yii2
+  step_decorators: ~

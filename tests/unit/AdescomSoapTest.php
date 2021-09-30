@@ -44,37 +44,6 @@ class AdescomSoapTest extends Unit {
 		$this->tester->assertFalse($this->adescom->logout());
 	}
 
-	public function testComposeMessageFromArray(): void {
-		$this->giveAdescom();
-		$message = $this->adescom->compose([
-			'message' => 'Test',
-			'src' => 'Src',
-			'dst' => 'Dst',
-			'overwriteSrc' => 'Overwrite',
-			'maxRetryCount' => 1,
-			'retryInterval' => 60,
-		]);
-		$this->tester->assertSame($message->getMessage(), 'Test');
-		$this->tester->assertSame($message->getSrc(), 'Src');
-		$this->tester->assertSame($message->getDst(), 'Dst');
-		$this->tester->assertSame($message->getOverwriteSrc(), 'Overwrite');
-		$this->tester->assertSame($message->getMaxRetryCount(), 1);
-		$this->tester->assertSame($message->getRetryInterval(), 60);
-	}
-
-	public function testComposeMessageWithComposeConfig(): void {
-		$this->giveAdescom();
-		$this->adescom->composeConfig['overwriteSrc'] = 'Overwrite Src From Config';
-
-		$message = $this->adescom->compose();
-		$this->tester->assertSame('Overwrite Src From Config', $message->getOverwriteSrc());
-
-		$message = $this->adescom->compose([
-			'overwriteSrc' => 'Test Overwrite',
-		]);
-		$this->tester->assertSame('Test Overwrite', $message->getOverwriteSrc());
-	}
-
 	public function testSendSMS(): void {
 		if (!isset(Yii::$app->params['adescom.test.sendSMS'])) {
 			$this->addWarning('Not Found Number');
