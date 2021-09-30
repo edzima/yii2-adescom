@@ -26,7 +26,6 @@ class Module extends BaseModule {
 	}
 
 	public static function t($message, $params = [], $language = null) {
-
 		return Yii::t('edzima/Yii2Adescom/adescom', $message, $params, $language);
 	}
 

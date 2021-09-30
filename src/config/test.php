@@ -22,13 +22,18 @@ return [
 	],
 	'language' => 'en-US',
 	'modules' => [
-		'adescom-sms' => [
+		'sms' => [
 			'class' => Module::class,
 		],
 	],
 	'components' => [
 		'sms' => [
 			'class' => AdescomSender::class,
+			'messageConfig' => [
+				'src' => '123123123',
+				'maxRetryCount' => 1,
+				'retryInterval' => 60,
+			],
 			'useFileTransport' => true,
 			'client' => [
 				'class' => AdescomSoap::class,
@@ -43,6 +48,7 @@ return [
 			'basePath' => __DIR__ . '/../web/assets',
 		],
 		'urlManager' => [
+			'enablePrettyUrl' => true,
 			'showScriptName' => true,
 		],
 		'cache' => [
