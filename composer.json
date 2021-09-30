@@ -17,7 +17,7 @@
 	"autoload": {
 		"psr-4": {
 			"Edzima\\Yii2Adescom\\": "src/",
-			"Edzima\\Yii2Adescom\\tests": "tests/"
+			"Edzima\\Yii2Adescom\\tests\\": "tests/"
 		}
 	},
 	"authors": [
