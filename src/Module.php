@@ -15,18 +15,17 @@ class Module extends BaseModule {
 	}
 
 	public function registerTranslations(): void {
-		Yii::$app->i18n->translations['edzima/Yii2Adescom/*'] = [
-			'class' => 'yii\i18n\PhpMessageSource',
-			'sourceLanguage' => 'en-US',
-			'basePath' => '@edzima/Yii2Adescom/messages',
-			'fileMap' => [
-				'edzima/Yii2Adescom/adescom' => 'adescom.php',
-			],
-		];
+		if (!isset(Yii::$app->i18n->translations['edzima/adescom'])) {
+			Yii::$app->i18n->translations['edzima/adescom'] = [
+				'class' => 'yii\i18n\PhpMessageSource',
+				'sourceLanguage' => 'en-US',
+				'basePath' => __DIR__ . '/messages',
+			];
+		}
 	}
 
 	public static function t($message, $params = [], $language = null) {
-		return Yii::t('edzima/Yii2Adescom/adescom', $message, $params, $language);
+		return Yii::t('edzima/adescom', $message, $params, $language);
 	}
 
 }
