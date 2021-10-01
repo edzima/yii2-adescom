@@ -78,11 +78,11 @@ abstract class BaseSmsSender extends Component implements SenderInterface {
 	 * Child classes should implement [[sendMessage()]] with the actual sms sending logic.
 	 *
 	 * @param MessageInterface $message SMS message instance to be sent
-	 * @return string SMS ID
+	 * @return string|null SMS ID when successful send or NULL when don't.
 	 */
-	public function send(MessageInterface $message): string {
+	public function send(MessageInterface $message): ?string {
 		if (!$this->beforeSend($message)) {
-			return false;
+			return null;
 		}
 
 		Yii::info('Sending SMS "' . $message->getMessage() . '" to "' . $message->getDst() . '"', __METHOD__);
@@ -95,7 +95,6 @@ abstract class BaseSmsSender extends Component implements SenderInterface {
 		$this->afterSend($message, $id);
 
 		return $id;
-		return $id !== null;
 	}
 
 	/**

@@ -8,7 +8,7 @@ interface SenderInterface {
 
 	/**
 	 * @param MessageInterface $message
-	 * @return string Message ID
+	 * @return string Message ID on Successful send or null when don't.
 	 */
 	public function send(MessageInterface $message): ?string;
 
