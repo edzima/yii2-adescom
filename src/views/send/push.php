@@ -3,12 +3,14 @@
 use Edzima\Yii2Adescom\models\SmsForm;
 use Edzima\Yii2Adescom\Module;
 use yii\helpers\Html;
+use yii\web\View;
 use yii\widgets\ActiveForm;
 
-/* @var $this \yii\web\View */
+/* @var $this View */
 /* @var $model SmsForm */
 
 $this->title = Module::t('Send SMS Message');
+$overwriteSrc = $model->getMessage()->getOverwriteSrc();
 ?>
 
 
@@ -22,7 +24,12 @@ $this->title = Module::t('Send SMS Message');
 
 	<?= $form->field($model, 'message')->textarea() ?>
 
-	<?= $form->field($model, 'withOverwrite')->checkbox()->hint($model->getMessage()->getOverwriteSrc()) ?>
+	<?= $form->field($model, 'removeSpecialCharacters')->checkbox() ?>
+
+	<?= $overwriteSrc !== null
+		? $form->field($model, 'withOverwrite')->checkbox()->hint($overwriteSrc)
+		: ''
+	?>
 
 	<div class="form-group">
 		<?= Html::submitButton(Module::t('Send'), ['class' => 'btn btn-success']) ?>

@@ -9,17 +9,20 @@ class Module extends BaseModule {
 
 	public $controllerNamespace = 'Edzima\Yii2Adescom\controllers';
 
-	public function init() {
+	public function init(): void {
 		parent::init();
-		$this->registerTranslations();
+		static::registerTranslations();
 	}
 
-	public function registerTranslations(): void {
+	public static function registerTranslations(): void {
 		if (!isset(Yii::$app->i18n->translations['edzima/adescom'])) {
 			Yii::$app->i18n->translations['edzima/adescom'] = [
 				'class' => 'yii\i18n\PhpMessageSource',
 				'sourceLanguage' => 'en-US',
 				'basePath' => __DIR__ . '/messages',
+				'fileMap' => [
+					'edzima/adescom' => 'adescom.php',
+				],
 			];
 		}
 	}

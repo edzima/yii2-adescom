@@ -20,7 +20,7 @@ class SmsFormTest extends Unit {
 
 	public function testEmpty(): void {
 		$this->tester->assertFalse($this->model->validate());
-		$this->tester->seeModelError($this->model, 'phone', 'Phone cannot be blank.');
+		$this->tester->seeModelError($this->model, 'phone', 'Phone number cannot be blank.');
 		$this->tester->seeModelError($this->model, 'message', 'Message cannot be blank.');
 	}
 
@@ -36,7 +36,19 @@ class SmsFormTest extends Unit {
 	public function testToShortNumber(): void {
 		$this->model->phone = '123 123 123';
 		$this->tester->assertFalse($this->model->validate());
-		$this->tester->seeModelError($this->model, 'phone', 'Phone should contain at least 11 characters.');
+		$this->tester->seeModelError($this->model, 'phone', 'Phone number should contain at least 11 characters.');
+	}
+
+	public function testRemoveSpecialChars(): void {
+		$this->model->message = 'ĄąĆćĘęŁłŃńÓóŚśŻżŹź';
+		$this->model->removeSpecialCharacters = true;
+		$this->assertTrue($this->model->validate(['message']));
+		$this->tester->assertSame('AaCcEeLlNnOoSsZzZz', $this->model->message);
+
+		$this->model->message = 'ĄąĆćĘęŁłŃńÓóŚśŻżŹź';
+		$this->model->removeSpecialCharacters = false;
+		$this->assertTrue($this->model->validate(['message']));
+		$this->tester->assertSame('ĄąĆćĘęŁłŃńÓóŚśŻżŹź', $this->model->message);
 	}
 
 	public function testSend(): void {
