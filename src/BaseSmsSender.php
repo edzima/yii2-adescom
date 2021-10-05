@@ -55,6 +55,16 @@ abstract class BaseSmsSender extends Component implements SenderInterface {
 	public string $fileTransportPath = '@runtime/sms';
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public function init() {
+		if (YII_DEBUG && !$this->useFileTransport) {
+			Yii::warning('In Debug mode recommended use file transport in SMS sender.', __METHOD__);
+		}
+		parent::init();
+	}
+
+	/**
 	 * @param array $params
 	 * @return MessageInterface
 	 * @throws InvalidConfigException

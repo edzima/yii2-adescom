@@ -77,29 +77,27 @@ class AdescomSoap extends Component {
 		if (!$this->isLogged()) {
 			$this->auth();
 		}
-		if (empty($this->s)) {
-			try {
-				$options = new stdClass();
+		try {
+			$options = new stdClass();
 
-				$options->src = $message->getSrc();
-				if ($message->getOverwriteSrc()) {
-					$options->overwrite_src = $message->getOverwriteSrc();
-				}
-				$options->dst = $message->getDst();
-				$options->max_retry_count = $message->getMaxRetryCount();
-				$options->retry_interval = $message->getRetryInterval();
-				$options->message = $message->getMessage();
-				Yii::debug("Try send SMS for Message: " . VarDumper::export($message), 'adescomSoap.send');
-
-				$response = $this->getClient()->smsSend($options);
-				Yii::debug("Success Send SMS. Response: " . VarDumper::export($response), 'adescomSoap.send');
-
-				return $response->sms_id;
-			} catch (SoapFault $e) {
-				throw new Exception($e->getMessage(), $e->getCode());
+			$options->src = $message->getSrc();
+			if ($message->getOverwriteSrc()) {
+				$options->overwrite_src = $message->getOverwriteSrc();
 			}
+			$options->dst = $message->getDst();
+			$options->max_retry_count = $message->getMaxRetryCount();
+			$options->retry_interval = $message->getRetryInterval();
+			$options->message = $message->getMessage();
+			Yii::debug("Try send SMS for Message: " . VarDumper::export($message), 'adescomSoap.send');
+
+			$response = $this->getClient()->smsSend($options);
+			Yii::debug("Success Send SMS. Response: " . VarDumper::export($response), 'adescomSoap.send');
+
+			return $response->sms_id;
+		} catch (SoapFault $e) {
+			throw new Exception($e->getMessage(), $e->getCode());
 		}
-		return null;
+
 	}
 
 	public function auth(): string {

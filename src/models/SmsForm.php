@@ -3,12 +3,18 @@
 namespace Edzima\Yii2Adescom\models;
 
 use Edzima\Yii2Adescom\Module;
+use yii\base\InvalidCallException;
 use yii\base\Model;
 use yii\di\Instance;
 use yii\base\InvalidConfigException;
 
 class SmsForm extends Model {
 
+	public const SCENARIO_DEFAULT = self::SCENARIO_SINGLE;
+	public const SCENARIO_SINGLE = 'single';
+	public const SCENARIO_MULTIPLE = 'multiple';
+
+	public array $phones = [];
 	public string $message = '';
 	public string $phone = '';
 	public bool $withOverwrite = true;
@@ -27,6 +33,9 @@ class SmsForm extends Model {
 		parent::init();
 		Module::registerTranslations();
 		$this->sender = Instance::ensure($this->sender, SenderInterface::class);
+		if ($this->scenario === Model::SCENARIO_DEFAULT) {
+			$this->scenario = static::SCENARIO_SINGLE;
+		}
 	}
 
 	/**
@@ -34,22 +43,36 @@ class SmsForm extends Model {
 	 */
 	public function rules(): array {
 		return [
-			[['phone', 'message'], 'required'],
+			[['message', 'withOverwrite', 'removeSpecialCharacters'], 'required'],
+			['phone', 'required', 'on' => static::SCENARIO_SINGLE],
+			['phones', 'required', 'on' => static::SCENARIO_MULTIPLE],
 			[['withOverwrite', 'removeSpecialCharacters'], 'boolean'],
-			[['phone', 'message'], 'string'],
-			['phone', 'filter', 'filter' => [$this, 'normalizePhone']],
+			['phone', 'filter', 'filter' => [$this, 'normalizePhone'], 'on' => static::SCENARIO_SINGLE],
+			['phone', 'string', 'min' => 11, 'max' => 15, 'on' => static::SCENARIO_SINGLE],
+			['phones', 'filter', 'filter' => [$this, 'normalizePhones'], 'on' => static::SCENARIO_MULTIPLE],
+			['phones', 'each', 'rule' => ['string', 'min' => 11, 'max' => 15], 'on' => static::SCENARIO_MULTIPLE],
+
+			[['message'], 'string', 'min' => 3],
 			['message', 'filter', 'filter' => [$this, 'normalizeMessage']],
-			['phone', 'string', 'min' => 11, 'max' => 15],
 		];
 	}
 
 	public function attributeLabels(): array {
 		return [
 			'phone' => Module::t('Phone number'),
+			'phones' => Module::t('Phones numbers'),
 			'message' => Module::t('Message'),
 			'withOverwrite' => Module::t('With Overwrite'),
 			'removeSpecialCharacters' => Module::t('Remove special characters'),
 		];
+	}
+
+	public function normalizePhones(array $phones): array {
+		$normalize = [];
+		foreach ($phones as $key => $phone) {
+			$normalize[$key] = static::normalizePhone($phone);
+		}
+		return $normalize;
 	}
 
 	public static function normalizePhone(string $value): string {
@@ -120,17 +143,42 @@ class SmsForm extends Model {
 			return false;
 		}
 
-		return !empty($this->sender->send($this->getMessage()));
+		if (!$this->isMultiple()) {
+			return !empty($this->sender->send($this->getMessage()));
+		}
+		$send = true;
+		foreach ($this->getMessages() as $message) {
+			$send &= $this->sender->send($message);
+		}
+		return $send;
 	}
 
-	public function getMessage(): MessageInterface {
+	public function getMessage(string $phone = null): MessageInterface {
 		$message = $this->sender->compose();
-		$message->setDst($this->phone);
+		$message->setDst($phone ?: $this->phone);
 		$message->setMessage($this->message);
 		if (!$this->withOverwrite) {
 			$message->setOverwriteSrc(null);
 		}
 		return $message;
+	}
+
+	/**
+	 * @return MessageInterface[]
+	 */
+	public function getMessages(): array {
+		if ($this->isMultiple()) {
+			$messages = [];
+			foreach ($this->phones as $phone) {
+				$messages[] = $this->getMessage($phone);
+			}
+			return $messages;
+		}
+		throw new InvalidCallException('Allowed only on Multiple Scenario.');
+	}
+
+	public function isMultiple(): bool {
+		return $this->scenario === static::SCENARIO_MULTIPLE;
 	}
 
 }

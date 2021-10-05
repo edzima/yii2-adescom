@@ -27,4 +27,8 @@ class UnitTester extends \Codeception\Actor {
 	public function seeModelError(Model $model, string $attribute, string $message): void {
 		$this->assertSame($message, $model->getFirstError($attribute));
 	}
+
+	public function dontSeeModelError(Model $model, string $attribute): void {
+		$this->assertNull($model->getFirstError($attribute));
+	}
 }
