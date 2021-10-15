@@ -86,9 +86,10 @@ class SmsFormTest extends Unit {
 		$message = $this->model->getMessage();
 		$this->tester->assertSame('48123123123', $message->getDst());
 		$this->tester->assertSame('Test Message', $message->getMessage());
-		$this->tester->expectThrowable(InvalidCallException::class, function () {
-			$this->model->getMessages();
-		});
+		$messages = $this->model->getMessages();
+		$message = reset($messages);
+		$this->tester->assertSame('48123123123', $message->getDst());
+		$this->tester->assertSame('Test Message', $message->getMessage());
 	}
 
 	public function testMessages(): void {
@@ -104,7 +105,6 @@ class SmsFormTest extends Unit {
 		foreach ($messages as $message) {
 			$this->tester->assertSame('Test Message', $message->getMessage());
 		}
-
 	}
 
 	public function testSend(): void {

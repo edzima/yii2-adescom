@@ -34,7 +34,7 @@ class SmsForm extends Model {
 		Module::registerTranslations();
 		$this->sender = Instance::ensure($this->sender, SenderInterface::class);
 		if ($this->scenario === Model::SCENARIO_DEFAULT) {
-			$this->scenario = static::SCENARIO_SINGLE;
+			$this->scenario = static::SCENARIO_DEFAULT;
 		}
 	}
 
@@ -167,14 +167,15 @@ class SmsForm extends Model {
 	 * @return MessageInterface[]
 	 */
 	public function getMessages(): array {
+		$messages = [];
 		if ($this->isMultiple()) {
-			$messages = [];
 			foreach ($this->phones as $phone) {
 				$messages[] = $this->getMessage($phone);
 			}
-			return $messages;
+		} else {
+			$messages[] = $this->getMessage();
 		}
-		throw new InvalidCallException('Allowed only on Multiple Scenario.');
+		return $messages;
 	}
 
 	public function isMultiple(): bool {
