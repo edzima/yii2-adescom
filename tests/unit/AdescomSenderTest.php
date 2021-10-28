@@ -69,7 +69,24 @@ class AdescomSenderTest extends Unit {
 		$this->tester->assertFileExists($file);
 		$this->tester->assertNotEmpty($this->messages);
 		$message = reset($this->messages);
-		$this->tester->assertSame('Test Message',$message->getMessage());
+		$this->tester->assertSame('Test Message', $message->getMessage());
+	}
+
+	public function testSendRealSMS(): void {
+		if (!isset(Yii::$app->params['adescom.test.sendSMS'])) {
+			$this->addWarning('Not Found reals SMS params. Set message config with adescom.test.sendSMS key.');
+		} else {
+			$this->giveSender([
+				'client' => [
+					'login' => Yii::$app->params['adescom.login'],
+					'password' => Yii::$app->params['adescom.password']
+				]
+			]);
+			$this->sender->useFileTransport = false;
+			$message = $this->sender->compose(Yii::$app->params['adescom.test.sendSMS']);
+			$smsId=$message->send();
+			$this->tester->assertNotEmpty($smsId);
+		}
 	}
 
 	private function giveSender(array $config = []): void {

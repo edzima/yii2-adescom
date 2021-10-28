@@ -74,30 +74,34 @@ class AdescomSoap extends Component {
 	}
 
 	public function send(MessageInterface $message): ?string {
+		$options = new stdClass();
+		$options->src = $message->getSrc();
+		if ($message->getOverwriteSrc()) {
+			$options->overwrite_src = $message->getOverwriteSrc();
+		}
+		$options->dst = $message->getDst();
+		$options->max_retry_count = $message->getMaxRetryCount();
+		$options->retry_interval = $message->getRetryInterval();
+		$options->message = $message->getMessage();
+		Yii::debug("Try send SMS for Message: " . VarDumper::export($message), 'adescomSoap.send');
+		$response = $this->callMethod('smsSend', $options);
+		Yii::debug("Success Send SMS. Response: " . VarDumper::export($response), 'adescomSoap.send');
+		return $response->sms_id;
+	}
+
+	public function callMethod(string $method, ...$args) {
 		if (!$this->isLogged()) {
 			$this->auth();
 		}
 		try {
-			$options = new stdClass();
-
-			$options->src = $message->getSrc();
-			if ($message->getOverwriteSrc()) {
-				$options->overwrite_src = $message->getOverwriteSrc();
-			}
-			$options->dst = $message->getDst();
-			$options->max_retry_count = $message->getMaxRetryCount();
-			$options->retry_interval = $message->getRetryInterval();
-			$options->message = $message->getMessage();
-			Yii::debug("Try send SMS for Message: " . VarDumper::export($message), 'adescomSoap.send');
-
-			$response = $this->getClient()->smsSend($options);
-			Yii::debug("Success Send SMS. Response: " . VarDumper::export($response), 'adescomSoap.send');
-
-			return $response->sms_id;
+			return call_user_func([$this->getClient(), $method], ...$args);
 		} catch (SoapFault $e) {
+			if ($e->getMessage() === 'Authorization required!') {
+				$this->auth();
+				return call_user_func([$this->getClient(), $method], ...$args);
+			}
 			throw new Exception($e->getMessage(), $e->getCode());
 		}
-
 	}
 
 	public function auth(): string {
@@ -107,23 +111,28 @@ class AdescomSoap extends Component {
 		}
 
 		if (empty($this->sessionId)) {
-			$this->sessionId = $client->login($this->login, $this->password, $this->loginDuration);
-			Yii::debug("Adescom Success login with: login {$this->login}. SessionId: {$this->sessionId}", 'adescomSoap.auth');
-			if (!empty($this->keySessionIdCache)) {
-				Yii::$app->cache->set($this->keySessionIdCache, $this->sessionId, $this->loginDuration);
+			try {
+				$this->sessionId = $client->login($this->login, $this->password, $this->loginDuration);
+				Yii::debug("Adescom Success login with: login {$this->login}. SessionId: {$this->sessionId}", 'adescomSoap.auth');
+				if (!empty($this->keySessionIdCache)) {
+					Yii::$app->cache->set($this->keySessionIdCache, $this->sessionId, $this->loginDuration);
+				}
+				$client->__setCookie('sessionID', $this->sessionId);
+			} catch (SoapFault $e) {
+				$this->sessionId = null;
+				throw new Exception($e->getMessage(), $e->getCode());
 			}
 		}
-		$client->__setCookie('sessionID', $this->sessionId);
 		return $this->sessionId;
 	}
 
-	public function logout(): bool {
+	public function logout(bool $deleteSessionCache = false): bool {
 		if ($this->isLogged()) {
-			if (!empty($this->keySessionIdCache)) {
+			if ($deleteSessionCache && !empty($this->keySessionIdCache)) {
 				Yii::$app->cache->delete($this->keySessionIdCache);
 			}
 			try {
-				return $this->getClient()->logout();
+				return $this->getClient()->logout($this->sessionId);
 			} catch (SoapFault $e) {
 				throw new Exception($e->getMessage(), (int) $e->getCode(), $e);
 			}

@@ -4,6 +4,7 @@ namespace Edzima\Yii2Adescom\tests\unit;
 
 use Codeception\Test\Unit;
 use Edzima\Yii2Adescom\AdescomSoap;
+use Edzima\Yii2Adescom\exceptions\Exception;
 use Edzima\Yii2Adescom\models\SmsSendRequest;
 use SoapFault;
 use UnitTester;
@@ -26,7 +27,7 @@ class AdescomSoapTest extends Unit {
 	}
 
 	public function testInvalidLogin(): void {
-		$this->tester->expectThrowable(SoapFault::class, function () {
+		$this->tester->expectThrowable(Exception::class, function () {
 			$this->giveAdescom(['login' => '', 'password' => '']);
 			$this->adescom->auth();
 		});
@@ -44,18 +45,6 @@ class AdescomSoapTest extends Unit {
 		$this->tester->assertFalse($this->adescom->logout());
 	}
 
-	public function testSendSMS(): void {
-		if (!isset(Yii::$app->params['adescom.test.sendSMS'])) {
-			$this->addWarning('Not Found Number');
-		} else {
-			$this->giveAdescom();
-			/** @var SmsSendRequest $message */
-			$message = $this->adescom->compose(Yii::$app->params['adescom.test.sendSMS']);
-			$this->adescom->auth();
-			$smsId = $this->adescom->send($message);
-			$this->tester->assertNotEmpty($smsId);
-		}
-	}
 
 	private function giveAdescom(array $config = []) {
 		if (!array_key_exists('login', $config)) {
