@@ -3,7 +3,7 @@
 	"description": "Yii2 Module for send SMS from ADESCOM",
 	"type": "library",
 	"require": {
-		"php": "^7.4",
+		"php": ">=7.4",
 		"ext-soap": "*",
 		"yiisoft/yii2": "^2.0"
 	},
